@@ -97,7 +97,7 @@ def decode_from_tfrecords(filename_queue, is_batch):
     _, serialized_example = reader.read(filename_queue)   # return file and file_name, do not care about name
     features = tf.parse_single_example(serialized_example,
                                        features={
-                                           'label': tf.FixedLenFeature([], tf.float64),
+                                           'label': tf.FixedLenFeature([], tf.int64),
                                            'img_raw' : tf.FixedLenFeature([], tf.string),
                                        })  #parse feature
     image = tf.decode_raw(features['img_raw'],tf.float64)
