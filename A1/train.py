@@ -116,6 +116,8 @@ def decode_from_tfrecords(filename_queue, is_batch):
     return image, label
 
 if __name__ == '__main__':
+    model = CNN()
+    '''
     # run_test = True
     filename_queue = tf.train.string_input_producer([train_filename],num_epochs=None) # read in the stream
     train_image, train_label = decode_from_tfrecords(filename_queue, is_batch=True)
@@ -144,3 +146,4 @@ if __name__ == '__main__':
             
         coord.request_stop()
         coord.join(threads)
+    '''
