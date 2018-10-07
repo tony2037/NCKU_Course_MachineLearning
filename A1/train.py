@@ -1,4 +1,5 @@
 import tensorflow as tf
+import tensorflow.contrib.slim as slim
 
 train_filename = './train.tfrecords'
 validation_filename = './validation.tfrecords'
@@ -63,6 +64,23 @@ class CNN():
                                                     reduction_indices=[1]))       # loss
         self.train_step = tf.train.AdamOptimizer(1e-4).minimize(self.cross_entropy)
 
+    def train(epochs):
+        sess = tf.Session()
+        # important step
+        # tf.initialize_all_variables() no long valid from
+        # 2017-03-02 if using tensorflow >= 0.12
+        if int((tf.__version__).split('.')[1]) < 12 and int((tf.__version__).split('.')[0]) < 1:
+            init = tf.initialize_all_variables()
+        else:
+            init = tf.global_variables_initializer()
+        sess.run(init)
+
+        for i in range(epochs):
+            batch_xs, batch_ys = mnist.train.next_batch(100)
+            sess.run(self.train_step, feed_dict={self.xs: batch_xs, self.ys: batch_ys, self.keep_prob: 0.5})
+            if i % 50 == 0:
+                print(compute_accuracy(
+                    mnist.test.images[:1000], mnist.test.labels[:1000]))
 
 
 def decode_from_tfrecords(filename_queue, is_batch):
