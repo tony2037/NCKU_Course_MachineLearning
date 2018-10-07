@@ -56,7 +56,7 @@ class CNN():
         # [n_samples, 7, 7, 64] ->> [n_samples, 7*7*64]
         h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])
         h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
-        h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
+        h_fc1_drop = tf.nn.dropout(h_fc1, self.keep_prob)
 
         ## fc2 layer ##
         W_fc2 = self.weight_variable([1024, 10])
