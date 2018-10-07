@@ -5,32 +5,32 @@ train_filename = './train.tfrecords'
 validation_filename = './validation.tfrecords'
 
 class CNN():
-    def __init__():
+    def __init__(self):
         pass
 
-    def weight_variable(shape):
+    def weight_variable(self, shape):
         initial = tf.truncated_normal(shape, stddev=0.1)
         return tf.Variable(initial)
 
-    def bias_variable(shape):
+    def bias_variable(self, shape):
         initial = tf.constant(0.1, shape=shape)
         return tf.Variable(initial)
 
-    def conv2d(x, W):
+    def conv2d(self, x, W):
         # stride [1, x_movement, y_movement, 1]
         # Must have strides[0] = strides[3] = 1
         return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
 
-    def max_pool_2x2(x):
+    def max_pool_2x2(self, x):
         # stride [1, x_movement, y_movement, 1]
         return tf.nn.max_pool(x, ksize=[1,2,2,1], strides=[1,2,2,1], padding='SAME')
 
-    def model_summary():
+    def model_summary(self):
         model_vars = tf.trainable_variables()
         # model_vars = tf.model_variables()
         slim.model_analyzer.analyze_vars(model_vars, print_info=True)
 
-    def build():
+    def build(self):
         # define placeholder for inputs to network
         self.xs = tf.placeholder(tf.float32, [None, 784])/255.   # 28x28
         self.ys = tf.placeholder(tf.float32, [None, 10])
@@ -72,7 +72,7 @@ class CNN():
         # The model information
         self.model_summary()
 
-    def train(epochs):
+    def train(self,epochs):
         sess = tf.Session()
         # important step
         # tf.initialize_all_variables() no long valid from
