@@ -25,6 +25,11 @@ class CNN():
         # stride [1, x_movement, y_movement, 1]
         return tf.nn.max_pool(x, ksize=[1,2,2,1], strides=[1,2,2,1], padding='SAME')
 
+    def model_summary():
+        model_vars = tf.trainable_variables()
+        # model_vars = tf.model_variables()
+        slim.model_analyzer.analyze_vars(model_vars, print_info=True)
+
     def build():
         # define placeholder for inputs to network
         self.xs = tf.placeholder(tf.float32, [None, 784])/255.   # 28x28
@@ -63,6 +68,9 @@ class CNN():
         self.cross_entropy = tf.reduce_mean(-tf.reduce_sum(self.ys * tf.log(self.prediction),
                                                     reduction_indices=[1]))       # loss
         self.train_step = tf.train.AdamOptimizer(1e-4).minimize(self.cross_entropy)
+
+        # The model information
+        self.model_summary()
 
     def train(epochs):
         sess = tf.Session()
