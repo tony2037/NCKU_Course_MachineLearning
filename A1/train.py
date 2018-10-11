@@ -62,7 +62,8 @@ class CNN():
         W_fc2 = self.weight_variable([1024, 10])
         b_fc2 = self.bias_variable([10])
         self.prediction = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
-
+        print('The prediction shape: ')
+        print(self.prediction.shape)
 
         # the error between prediction and real data
         self.cross_entropy = tf.reduce_mean(-tf.reduce_sum(self.ys * tf.log(self.prediction),
@@ -116,9 +117,11 @@ def decode_from_tfrecords(filename_queue, is_batch):
     return image, label
 
 if __name__ == '__main__':
+    print('Build up model')
     model = CNN()
     model.build()
-    '''
+
+    print('Data proccess')
     # run_test = True
     filename_queue = tf.train.string_input_producer([train_filename],num_epochs=None) # read in the stream
     train_image, train_label = decode_from_tfrecords(filename_queue, is_batch=True)
@@ -147,4 +150,3 @@ if __name__ == '__main__':
             
         coord.request_stop()
         coord.join(threads)
-    '''
