@@ -8,8 +8,9 @@ train_filename = './train.tfrecords'
 validation_filename = './validation.tfrecords'
 
 class CNN():
-    def __init__(self):
-        pass
+    def __init__(self, train_filename_queue, validation_filename_queue):
+        self.train_filename_queue = train_filename_queue
+        self.validation_filename_queue = validation_filename_queue
 
     def weight_variable(self, shape):
         initial = tf.truncated_normal(shape, stddev=0.1)
@@ -94,44 +95,46 @@ class CNN():
                 print(compute_accuracy(
                     mnist.test.images[:1000], mnist.test.labels[:1000]))
 
-
-def decode_from_tfrecords(filename_queue, is_batch):
-    
-    reader = tf.TFRecordReader()
-    _, serialized_example = reader.read(filename_queue)   # return file and file_name, do not care about name
-    features = tf.parse_single_example(serialized_example,
-                                       features={
-                                           'label': tf.FixedLenFeature([], tf.int64),
-                                           'img_raw' : tf.FixedLenFeature([], tf.string),
-                                       })  #parse feature
-    image = tf.decode_raw(features['img_raw'],tf.float64)
-    image = tf.reshape(image, [56,56])
-    label = tf.cast(features['label'], tf.float64)
-    
-    if is_batch:
-        batch_size = 3
-        min_after_dequeue = 10
-        capacity = min_after_dequeue+3*batch_size
-        image, label = tf.train.shuffle_batch([image, label],
-                                                          batch_size=batch_size, 
-                                                          num_threads=3, 
-                                                          capacity=capacity,
-                                                          min_after_dequeue=min_after_dequeue)
-    return image, label
+    def decode_from_tfrecords(self, filename_queue, is_batch):
+        
+        reader = tf.TFRecordReader()
+        _, serialized_example = reader.read(filename_queue)   # return file and file_name, do not care about name
+        features = tf.parse_single_example(serialized_example,
+                                        features={
+                                            'label': tf.FixedLenFeature([], tf.int64),
+                                            'img_raw' : tf.FixedLenFeature([], tf.string),
+                                        })  #parse feature
+        image = tf.decode_raw(features['img_raw'],tf.float64)
+        image = tf.reshape(image, [56,56])
+        label = tf.cast(features['label'], tf.float64)
+        
+        if is_batch:
+            batch_size = 3
+            min_after_dequeue = 10
+            capacity = min_after_dequeue+3*batch_size
+            image, label = tf.train.shuffle_batch([image, label],
+                                                            batch_size=batch_size, 
+                                                            num_threads=3, 
+                                                            capacity=capacity,
+                                                            min_after_dequeue=min_after_dequeue)
+        return image, label
 
 if __name__ == '__main__':
+    train_filename_queue = tf.train.string_input_producer([train_filename],num_epochs=None) # read in the stream
+    validation_filename_queue = tf.train.string_input_producer([validation_filename],num_epochs=None) # read in the stream
+    
     print('Build up model')
-    model = CNN()
+    model = CNN(train_filename_queue = train_filename_queue, validation_filename_queue = validation_filename_queue)
     model.build()
 
     print('Data proccess')
     # run_test = True
     filename_queue = tf.train.string_input_producer([train_filename],num_epochs=None) # read in the stream
-    train_image, train_label = decode_from_tfrecords(filename_queue, is_batch=True)
+    train_image, train_label = model.decode_from_tfrecords(filename_queue, is_batch=True)
     print(train_image.shape)
 
     filename_queue = tf.train.string_input_producer([validation_filename],num_epochs=None) # read in the stream
-    valid_image, valid_label = decode_from_tfrecords(filename_queue, is_batch=True)
+    valid_image, valid_label = model.decode_from_tfrecords(filename_queue, is_batch=True)
     with tf.Session() as sess: # Start a session
         init_op = tf.global_variables_initializer()
         sess.run(init_op)
