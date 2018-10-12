@@ -37,10 +37,10 @@ class CNN():
 
     def build(self):
         # define placeholder for inputs to network
-        self.xs = tf.placeholder(tf.float32, [None, 784])/255.   # 28x28
+        self.xs = tf.placeholder(tf.float32, [None, 128*128])/255.   # 28x28
         self.ys = tf.placeholder(tf.float32, [None, 10])
         self.keep_prob = tf.placeholder(tf.float32)
-        x_image = tf.reshape(self.xs, [-1, 28, 28, 1])
+        x_image = tf.reshape(self.xs, [-1, 128, 128, 1])
         # print(x_image.shape)  # [n_samples, 28,28,1]
 
         ## conv1 layer ##
