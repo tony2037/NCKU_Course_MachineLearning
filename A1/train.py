@@ -122,7 +122,6 @@ class CNN():
         image = tf.decode_raw(features['img_raw'],tf.float64)
         image = tf.reshape(image, [128,128])
         label = tf.cast(features['label'], tf.float64)
-        label = tf.reshape(label, [10])
         
         if is_batch:
             batch_size = 10 # Set batch_size
