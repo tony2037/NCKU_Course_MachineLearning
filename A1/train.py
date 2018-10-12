@@ -89,11 +89,13 @@ class CNN():
         sess.run(init)
 
         for i in range(epochs):
-            batch_xs, batch_ys = mnist.train.next_batch(100)
+            batch_xs, batch_ys = self.decode_from_tfrecords(self.train_filename_queue, is_batch = True)
             sess.run(self.train_step, feed_dict={self.xs: batch_xs, self.ys: batch_ys, self.keep_prob: 0.5})
+            """
             if i % 50 == 0:
                 print(compute_accuracy(
                     mnist.test.images[:1000], mnist.test.labels[:1000]))
+            """
 
     def decode_from_tfrecords(self, filename_queue, is_batch):
         
@@ -109,7 +111,7 @@ class CNN():
         label = tf.cast(features['label'], tf.float64)
         
         if is_batch:
-            batch_size = 3
+            batch_size = 10 # Set batch_size
             min_after_dequeue = 10
             capacity = min_after_dequeue+3*batch_size
             image, label = tf.train.shuffle_batch([image, label],
