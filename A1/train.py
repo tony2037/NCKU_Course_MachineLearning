@@ -100,6 +100,8 @@ class CNN():
             print('epochs : %s' %(str(i)))
 
             batch_xs, batch_ys = self.decode_from_tfrecords(self.train_filename_queue, is_batch = True)
+            batch_xs, batch_ys = sess.run([batch_xs, batch_ys])
+            print(type(batch_xs))
             sess.run(self.train_step, feed_dict={self.xs: batch_xs, self.ys: batch_ys, self.keep_prob: 0.5})
             """
             if i % 50 == 0:
