@@ -97,6 +97,8 @@ class CNN():
             self.saver.restore(sess, './%s' % self.model_file_name)
 
         for i in range(epochs):
+            print('epochs : %s' %(str(i)))
+
             batch_xs, batch_ys = self.decode_from_tfrecords(self.train_filename_queue, is_batch = True)
             sess.run(self.train_step, feed_dict={self.xs: batch_xs, self.ys: batch_ys, self.keep_prob: 0.5})
             """
@@ -139,3 +141,6 @@ if __name__ == '__main__':
     print('Build up model')
     model = CNN(train_filename_queue = train_filename_queue, validation_filename_queue = validation_filename_queue)
     model.build()
+
+    # Start training
+    model.train()
