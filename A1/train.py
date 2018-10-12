@@ -11,7 +11,6 @@ class CNN():
     def __init__(self, train_filename_queue, validation_filename_queue):
         self.train_filename_queue = train_filename_queue
         self.validation_filename_queue = validation_filename_queue
-        self.saver = tf.train.Saver()
         self.model_file_name = 'model.ckpt'
 
     def weight_variable(self, shape):
@@ -78,6 +77,9 @@ class CNN():
 
         # The model information
         self.model_summary()
+
+        # Build up Saver to save the model
+        self.saver = tf.train.Saver()
 
     def train(self,epochs):
         sess = tf.Session()
