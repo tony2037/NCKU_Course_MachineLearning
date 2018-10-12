@@ -119,9 +119,9 @@ class CNN():
                                             'label': tf.FixedLenFeature([], tf.int64),
                                             'img_raw' : tf.FixedLenFeature([], tf.string),
                                         })  #parse feature
-        image = tf.decode_raw(features['img_raw'],tf.float64)
+        image = tf.decode_raw(features['img_raw'],tf.float32)
         image = tf.reshape(image, [128,128])
-        label = tf.cast(features['label'], tf.float64)
+        label = tf.cast(features['label'], tf.float32)
         
         if is_batch:
             batch_size = 10 # Set batch_size
