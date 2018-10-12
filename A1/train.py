@@ -12,6 +12,7 @@ class CNN():
         self.train_filename_queue = train_filename_queue
         self.validation_filename_queue = validation_filename_queue
         self.saver = tf.Train.Saver()
+        self.model_file_name = 'model.ckpt'
 
     def weight_variable(self, shape):
         initial = tf.truncated_normal(shape, stddev=0.1)
@@ -89,6 +90,10 @@ class CNN():
             init = tf.global_variables_initializer()
         sess.run(init)
 
+        # Restore the model if exists
+        if os.path.exists(self.model_file_name):
+            self.saver.restore(sess, './%s' % self.model_file_name)
+
         for i in range(epochs):
             batch_xs, batch_ys = self.decode_from_tfrecords(self.train_filename_queue, is_batch = True)
             sess.run(self.train_step, feed_dict={self.xs: batch_xs, self.ys: batch_ys, self.keep_prob: 0.5})
@@ -98,7 +103,7 @@ class CNN():
                     mnist.test.images[:1000], mnist.test.labels[:1000]))
             """
         # Save the model
-        save_path = saver.save(sess, "/tmp/model.ckpt")
+        save_path = self.saver.save(sess, './%s' % self.model_file_name)
         print("Model saved in path: %s" % save_path)
 
     def decode_from_tfrecords(self, filename_queue, is_batch):
