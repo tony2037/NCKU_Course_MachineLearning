@@ -143,4 +143,4 @@ if __name__ == '__main__':
     model.build()
 
     # Start training
-    model.train()
+    model.train(epochs = 1000)
