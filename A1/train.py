@@ -11,7 +11,7 @@ class CNN():
     def __init__(self, train_filename_queue, validation_filename_queue):
         self.train_filename_queue = train_filename_queue
         self.validation_filename_queue = validation_filename_queue
-        self.saver = tf.Train.Saver()
+        self.saver = tf.train.Saver()
         self.model_file_name = 'model.ckpt'
 
     def weight_variable(self, shape):
