@@ -11,6 +11,7 @@ class CNN():
     def __init__(self, train_filename_queue, validation_filename_queue):
         self.train_filename_queue = train_filename_queue
         self.validation_filename_queue = validation_filename_queue
+        self.saver = tf.Train.Saver()
 
     def weight_variable(self, shape):
         initial = tf.truncated_normal(shape, stddev=0.1)
@@ -96,6 +97,9 @@ class CNN():
                 print(compute_accuracy(
                     mnist.test.images[:1000], mnist.test.labels[:1000]))
             """
+        # Save the model
+        save_path = saver.save(sess, "/tmp/model.ckpt")
+        print("Model saved in path: %s" % save_path)
 
     def decode_from_tfrecords(self, filename_queue, is_batch):
         
