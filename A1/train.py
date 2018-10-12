@@ -139,34 +139,3 @@ if __name__ == '__main__':
     print('Build up model')
     model = CNN(train_filename_queue = train_filename_queue, validation_filename_queue = validation_filename_queue)
     model.build()
-
-    print('Data proccess')
-    # run_test = True
-    filename_queue = tf.train.string_input_producer([train_filename],num_epochs=None) # read in the stream
-    train_image, train_label = model.decode_from_tfrecords(filename_queue, is_batch=True)
-    print(train_image.shape)
-
-    filename_queue = tf.train.string_input_producer([validation_filename],num_epochs=None) # read in the stream
-    valid_image, valid_label = model.decode_from_tfrecords(filename_queue, is_batch=True)
-    with tf.Session() as sess: # Start a session
-        init_op = tf.global_variables_initializer()
-        sess.run(init_op)
-        coord=tf.train.Coordinator()
-        threads= tf.train.start_queue_runners(coord=coord)
-        
-        try:
-            # while not coord.should_stop():
-            for i in range(2):
-                example, l = sess.run([train_image,train_label])# get image and label
-                print('train:')
-                print(example, l) 
-                texample, tl = sess.run([valid_image, valid_label])
-                print('valid:')
-                print(texample,tl)
-        except tf.errors.OutOfRangeError:
-            print('Done reading')
-        finally:
-            coord.request_stop()
-            
-        coord.request_stop()
-        coord.join(threads)
