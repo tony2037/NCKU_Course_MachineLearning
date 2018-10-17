@@ -8,7 +8,9 @@ train_filename = './train.tfrecords'
 validation_filename = './validation.tfrecords'
 
 class CNN():
-    def __init__(self, train_filename_queue, validation_filename_queue):
+    def __init__(self,train_filename, train_filename_queue, validation_filename, validation_filename_queue):
+        self.train_filename = train_filename
+        self.validation_filename = validation_filename
         self.train_filename_queue = train_filename_queue
         self.validation_filename_queue = validation_filename_queue
 
@@ -124,7 +126,8 @@ if __name__ == '__main__':
     validation_filename_queue = tf.train.string_input_producer([validation_filename],num_epochs=None) # read in the stream
     
     print('Build up model')
-    model = CNN(train_filename_queue = train_filename_queue, validation_filename_queue = validation_filename_queue)
+    model = CNN(train_filename = train_filename,train_filename_queue = train_filename_queue, validation_filename = validation_filename,\
+     validation_filename_queue = validation_filename_queue)
     model.build()
 
     print('Data proccess')
