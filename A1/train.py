@@ -1,11 +1,36 @@
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import os
+from glob import glob
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # See https://stackoverflow.com/questions/47068709/your-cpu-supports-instructions-that-this-tensorflow-binary-was-not-compiled-to-u
 
 train_filename = './train.tfrecords'
 validation_filename = './validation.tfrecords'
+
+class Dataset():
+    def __init__(train_path, validation_path):
+        self.filesnames = []
+        self.labels = []
+        for i in range(sample_num):
+            images = glob('%sSample%s/*.png' % (data_path, str(i+1).zfill(3)))
+            label = [0]* 10
+            label[i] = 1
+            for image in images:
+                self.filesnames.append(image)
+                self.labels.append(label)
+
+        self.filenames = tf.constant(self.filenames)
+        self.labels = tf.constant(self.labels)
+        self.dataset = tf.data.Dataset.from_tensor_slices((self.filenames, self.labels))
+        self.dataset = self.dataset.map(self._parse_function)
+        self.dataset = self.dataset.shuffle(buffersize=1000).batch(32).repeat(100)
+    def _parse_function(filename, label):
+        image_string = tf.read_file(filename)
+        image_decoded = tf.image.decode_image(image_string)
+        image_resized = tf.image.resize_images(image_decoded, [28, 28])
+        return image_resized, label
+
 
 class CNN():
     def __init__(self, train_filename_queue, validation_filename_queue):
@@ -135,25 +160,5 @@ if __name__ == '__main__':
 
     filename_queue = tf.train.string_input_producer([validation_filename],num_epochs=None) # read in the stream
     valid_image, valid_label = model.decode_from_tfrecords(filename_queue, is_batch=True)
-    with tf.Session() as sess: # Start a session
-        init_op = tf.global_variables_initializer()
-        sess.run(init_op)
-        coord=tf.train.Coordinator()
-        threads= tf.train.start_queue_runners(coord=coord)
-        
-        try:
-            # while not coord.should_stop():
-            for i in range(2):
-                example, l = sess.run([train_image,train_label])# get image and label
-                print('train:')
-                print(example, l) 
-                texample, tl = sess.run([valid_image, valid_label])
-                print('valid:')
-                print(texample,tl)
-        except tf.errors.OutOfRangeError:
-            print('Done reading')
-        finally:
-            coord.request_stop()
-            
-        coord.request_stop()
-        coord.join(threads)
+    
+    
