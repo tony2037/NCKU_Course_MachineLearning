@@ -27,7 +27,7 @@ class Dataset():
         self.labels = tf.constant(self.labels)
         self.dataset = tf.data.Dataset.from_tensor_slices((self.filesnames, self.labels))
         self.dataset = self.dataset.map(self._parse_function)
-        self.dataset = self.dataset.shuffle(buffer_size=1000).batch(32).repeat(100)
+        self.dataset = self.dataset.shuffle(buffer_size=1000).batch(32).repeat(1000)
 
         self.iterator = self.dataset.make_one_shot_iterator()
     def _parse_function(self, filename, label):
@@ -73,32 +73,35 @@ class CNN():
         self.keep_prob = tf.placeholder(tf.float32)
 
         ## conv1 layer ##
-        W_conv1 = self.weight_variable([5,5, 1,32]) # patch 5x5, in size 1, out size 32
-        b_conv1 = self.bias_variable([32])
-        h_conv1 = tf.nn.relu(self.conv2d(features, W_conv1) + b_conv1) # output size 28x28x32
-        h_pool1 = self.max_pool_2x2(h_conv1)                                         # output size 14x14x32
+        self.W_conv1 = self.weight_variable([5,5, 1,32]) # patch 5x5, in size 1, out size 32
+        self.b_conv1 = self.bias_variable([32])
+        self.h_conv1 = tf.nn.relu(self.conv2d(features, self.W_conv1) + self.b_conv1) # output size 28x28x32
+        self.h_pool1 = self.max_pool_2x2(self.h_conv1)                                         # output size 14x14x32
 
         ## conv2 layer ##
-        W_conv2 = self.weight_variable([5,5, 32, 64]) # patch 5x5, in size 32, out size 64
-        b_conv2 = self.bias_variable([64])
-        h_conv2 = tf.nn.relu(self.conv2d(h_pool1, W_conv2) + b_conv2) # output size 14x14x64
-        h_pool2 = self.max_pool_2x2(h_conv2)                                         # output size 7x7x64
+        self.W_conv2 = self.weight_variable([5,5, 32, 64]) # patch 5x5, in size 32, out size 64
+        self.b_conv2 = self.bias_variable([64])
+        self.h_conv2 = tf.nn.relu(self.conv2d(self.h_pool1, self.W_conv2) + self.b_conv2) # output size 14x14x64
+        self.h_pool2 = self.max_pool_2x2(self.h_conv2)                                         # output size 7x7x64
 
         ## fc1 layer ##
-        W_fc1 = self.weight_variable([7*7*64, 1024])
-        b_fc1 = self.bias_variable([1024])
+        self.W_fc1 = self.weight_variable([7*7*64, 1024])
+        self.b_fc1 = self.bias_variable([1024])
         # [n_samples, 7, 7, 64] ->> [n_samples, 7*7*64]
-        h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])
-        h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
-        h_fc1_drop = tf.nn.dropout(h_fc1, 0.5)
+        self.h_pool2_flat = tf.reshape(self.h_pool2, [-1, 7*7*64])
+        self.h_fc1 = tf.nn.relu(tf.matmul(self.h_pool2_flat, self.W_fc1) + self.b_fc1)
+        self.h_fc1_drop = tf.nn.dropout(self.h_fc1, 0.5)
 
         ## fc2 layer ##
-        W_fc2 = self.weight_variable([1024, 10])
-        b_fc2 = self.bias_variable([10])
-        self.prediction = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
+        self.W_fc2 = self.weight_variable([1024, 10])
+        self.b_fc2 = self.bias_variable([10])
+        self.prediction = tf.nn.softmax(tf.matmul(self.h_fc1_drop, self.W_fc2) + self.b_fc2)
         print('The prediction shape: ')
         print(self.prediction.shape)
-
+        print(self.prediction.dtype)
+        print('The lables shape: ')
+        print(labels.shape)
+        print(labels.dtype)
         # the error between prediction and real data
         self.cross_entropy = tf.reduce_mean(-tf.reduce_sum(labels * tf.log(self.prediction),
                                                     reduction_indices=[1]))       # loss
@@ -109,7 +112,7 @@ class CNN():
 
         with tf.Session() as sess:
             sess.run(tf.global_variables_initializer())
-            for i in range(100):
+            for i in range(500):
                 _, loss_value = sess.run([self.train_step, self.cross_entropy])
                 print("Iter: {}, Loss: {:.4f}".format(i, loss_value))
 
