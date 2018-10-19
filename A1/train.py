@@ -42,6 +42,7 @@ class CNN():
         self.train_filename_queue = train_filename_queue
         self.validation_filename_queue = validation_filename_queue
         self.dataset = dataset
+        self.save_path = './model.ckpt'
 
     def weight_variable(self, shape):
         initial = tf.truncated_normal(shape, stddev=0.1)
@@ -116,6 +117,9 @@ class CNN():
             for i in range(500):
                 _, loss_value = sess.run([self.train_step, self.cross_entropy])
                 print("Iter: {}, Loss: {:.4f}".format(i, loss_value))
+            saver = tf.train.Saver()
+            self.save_path = saver.save(sess, self.save_path)
+            print("Model saved in path: %s" % self.save_path)
 
     def train(self,epochs):
         sess = tf.Session()
