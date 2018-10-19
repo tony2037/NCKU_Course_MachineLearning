@@ -96,6 +96,7 @@ class CNN():
         self.W_fc2 = self.weight_variable([1024, 10])
         self.b_fc2 = self.bias_variable([10])
         self.prediction = tf.nn.softmax(tf.matmul(self.h_fc1_drop, self.W_fc2) + self.b_fc2)
+        self.prediction = tf.clip_by_value(self.prediction, 1e-8, 1.0)
         print('The prediction shape: ')
         print(self.prediction.shape)
         print(self.prediction.dtype)
